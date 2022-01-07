@@ -1,8 +1,9 @@
 /* eslint-disable no-undef */
 //@ts-check
 
-
 const cards = document.querySelectorAll(".card");
+let gs = new GameState(cards)
+
 /**
  * Game state object
  * @param {*} cards 
@@ -15,115 +16,121 @@ function GameState(cards) {
     this.revealedCards = [];
     this.availableCards = Array.from(cards);
     this.usedCards = [];
+    this.refEvent = null;
 }
 
 GameState.prototype.playRound = function (playerId) {
+    //Checks whether the number of uncovered cards is equal to 2
+    // if no then does nothing
     if(this.revealedCards.length === 2) {
-        var idA = this.revealedCards[0].id;
-        var idB = this.revealedCards[1].id;
-        if(idA.charAt(0) === idB.charAt(0)){
+        // Checks if the cards are matching, if not covers them
+        if(this.revealedCards[0].id.charAt(0) === this.revealedCards[1].id.charAt(0)){
             this.aScore++;
-            var parentThis = this;
-            this.revealedCards.forEach( function(el) {
-                parentThis.usedCards.push(el);
-                for(var i = 0; i < parentThis.availableCards.length; i++) {
-                    if(parentThis.availableCards[i].id === el.id) {
-                        parentThis.availableCards.splice(i, 1);
-                    }
-                }
-            })
-            this.revealedCards.forEach( function(element) {
-                var elClone = element.cloneNode(true);
-                element.parentNode.replaceChild(elClone, element)
-                elClone.setAttribute("src", "images/cat.png");
-            });
+            this.matchCards();
+            // Modifies the score
             this.revealedCards = new Array();
             var score = document.getElementById("aScore");
             score.textContent = 'Blue score: ' + this.aScore;
+            // Checks if all the cards have been uncovered
             if(this.availableCards.length === 0) {
+                // If true resets the game
                 setTimeout(function() {
                     alert("You won!");
                 }, 500)
                 this.availableCards = Array.from(this.usedCards);
-                var x = concealCardNoEvent(parentThis);
+                var parentThis = this;
                 setTimeout( function() {
-                    parentThis.availableCards.forEach(function(el) {
-                        console.log(el);
-                        x(el);
-                    })
+                    parentThis.initializeCards();
+                    var score = document.getElementById("aScore");
+                    score.textContent = 'Blue score: ' + parentThis.aScore;
                 }, 600);
+                this.aScore = 0;
             }
 
         } else {
+            //Covers the cards and alerts the player after a small cooldown
             var parentThis = this
             setTimeout(function() {
-                var x = concealCardNoEvent(parentThis);
-                x(parentThis.revealedCards[0]);
-                x(parentThis.revealedCards[0]);
-            }, 1000)
+                alert("Wrong cards!");
+                parentThis.concealRevealed(parentThis.revealedCards[0]);
+                parentThis.concealRevealed(parentThis.revealedCards[0]);
+            }, 500)
         }
     }
 }
 
+// Removes matched cards from play
+GameState.prototype.matchCards = function() {
+    var parentThis = this;
+    // Removes the uncovered cards from the available cards
+    this.revealedCards.forEach( function(el) {
+        parentThis.usedCards.push(el);
+        for(var i = 0; i < parentThis.availableCards.length; i++) {
+            if(parentThis.availableCards[i].id === el.id) {
+                parentThis.availableCards.splice(i, 1);
+            }
+        }
+    })
+    // Removes all events from the card to make it static
+    this.revealedCards.forEach( function(element) {
+        var conceal = function(ca) {};
+        element.removeEventListener("click", refer, false);
+        element.setAttribute("src", "images/cat.png");
+    });
+}
 
-function concealCardNoEvent(gameState) {
+// Conceals a revealed card object
+GameState.prototype.concealRevealed = function(ca) {
+    var card = ca;
+    card.setAttribute("src", "images/logo.png");
+    card.addEventListener("click", this.revealCard(this));
+    card.removeEventListener("click", refer, false);
+    console.log(this.refEvent);
+    for( var i = 0; i < this.revealedCards.length; i++) {
+        if(this.revealedCards[i].id === card.id) {
+            this.revealedCards.splice(i, 1);
+        }
+    }
+}
+
+// Conceals a card and adds an event to reveal
+GameState.prototype.concealCard = function(gameState) {
     return function conceal(ca) {
-        var card = ca;
+        const card = document.getElementById(ca.target["id"]);
         card.setAttribute("src", "images/logo.png");
-        card.addEventListener("click", revealCard(gameState));
-        card.removeEventListener("click", conceal, false);
+        card.addEventListener("click", gameState.revealCard(gameState));
+        card.removeEventListener("click", refer, false);
         for( var i = 0; i < gameState.revealedCards.length; i++) {
             if(gameState.revealedCards[i].id === card.id) {
                 gameState.revealedCards.splice(i, 1);
             }
         }
     }
-    
-}
+};
 
-function concealCard(gameState) {
-    return function conceal(ca) {
-        var card;
-        if(!(typeof ca.altKey == "undefined")) {
-            card = document.getElementById(ca.target["id"]);
-        } else {
-            card = ca;
-        }
-        
-        card.setAttribute("src", "images/logo.png");
-        card.addEventListener("click", revealCard(gameState));
-        card.removeEventListener("click", conceal, false);
-        for( var i = 0; i < gameState.revealedCards.length; i++) {
-            if(gameState.revealedCards[i].id === card.id) {
-                gameState.revealedCards.splice(i, 1);
-            }
-        }
-    }
-    
-}
-
-function revealCard(gameState) {
+// Reveals a card and add an event to conceal
+GameState.prototype.revealCard = function(gameState) {
     return function reveal(ca) {
         const card = document.getElementById(ca.target["id"]);
-        card.setAttribute("src", "images/" + ca.target["id"].charAt(0) + ".png");
-        card.addEventListener("click", concealCard(gameState));
+        card.setAttribute("src", "images/" + ca.target["id"].charAt(0) + ".png")
+        card.addEventListener("click", refer);
         card.removeEventListener("click", reveal, false);
         gameState.revealedCards.push(card);
         gameState.playRound("A");
     }
-    
 };
 
-function initializeCards(gameState) {
-        gameState.availableCards.forEach( function (element) {
-            element.setAttribute("src", "images/logo.png");
-            element.addEventListener("click", revealCard(gameState));
-        });
-    }
-let gs = new GameState(cards)
-initializeCards(gs);
+// Initializes the cards at the beginning and on resets
+GameState.prototype.initializeCards = function() {
+    var parentThis = this;
+    this.availableCards.forEach( function (element) {
+        element.setAttribute("src", "images/logo.png");
+        element.addEventListener("click", parentThis.revealCard(parentThis));
+    });
+}
 
-
+const refer = gs.concealCard(gs); // Special reference for a function
+gs.initializeCards();
 
 
 
