@@ -38,6 +38,7 @@ GameState.prototype.playRound = function (playerId) {
                     alert("You won!");
                 }, 500)
                 this.availableCards = Array.from(this.usedCards);
+                this.usedCards = new Array();
                 var parentThis = this;
                 setTimeout( function() {
                     parentThis.initializeCards();
