@@ -1,8 +1,6 @@
-body {
-  padding: 50px;
-  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
-}
-
-a {
-  color: #00B7FF;
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@500&display=swap');
+body{
+  font-family: 'DM Sans', sans-serif;
+            color: #00a6d8;
+            text-align: center;
 }
