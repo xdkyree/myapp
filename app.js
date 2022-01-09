@@ -15,15 +15,18 @@ if(process.argv.length < 3) {
 const port = process.argv[2];
 const app = express();
 
-app.get("play", indexRouter);
+
+
+app.use(express.static(__dirname + "/public"));
+app.get("/play", indexRouter);
 app.get("/", indexRouter);
 
 const server = http.createServer(app);
 const wss = new websocket.Server({ server });
 
+
 const websockets = {};
 let gamesInitialized = 0;
-
 setInterval(function() {
     for (let i in websockets) {
         if(Object.prototype.hasOwnProperty.call(websockets, i)) {
@@ -34,6 +37,7 @@ setInterval(function() {
         }
     }
 }, 50000);
+
 
 let currentGame = new Game(gamesInitialized++);
 let connectionID = 0;
@@ -50,7 +54,7 @@ wss.on("connection", function connection(ws) {
 
     con.send(playerType == "A" ? messages.S_PLAYER_A : messages.S_PLAYER_B)
     if(playerType == "A") {
-        con.send(messages.O_CHOOSE);
+        con.send(JSON.stringify(messages.O_CHOOSE));
     }
 
     if(currentGame.hasTwoPlayers()) {
@@ -112,6 +116,4 @@ wss.on("connection", function connection(ws) {
     })
 })
 
-
-app.use(express.static(__dirname + "/public"));
-http.createServer(app).listen(port);
+server.listen(port);
