@@ -16,7 +16,6 @@ function GameState(cards) {
     this.revealedCards = [];
     this.availableCards = Array.from(cards);
     this.usedCards = [];
-    this.refEvent = null;
 }
 
 GameState.prototype.playRound = function (playerId) {
@@ -75,7 +74,7 @@ GameState.prototype.matchCards = function() {
     // Removes all events from the card to make it static
     this.revealedCards.forEach( function(element) {
         var conceal = function(ca) {};
-        element.removeEventListener("click", refer, false);
+        element.removeEventListener("click", referConceal, false);
         element.setAttribute("src", "images/cat.png");
     });
 }
@@ -85,8 +84,7 @@ GameState.prototype.concealRevealed = function(ca) {
     var card = ca;
     card.setAttribute("src", "images/logo.png");
     card.addEventListener("click", this.revealCard(this));
-    card.removeEventListener("click", refer, false);
-    console.log(this.refEvent);
+    card.removeEventListener("click", referConceal, false);
     for( var i = 0; i < this.revealedCards.length; i++) {
         if(this.revealedCards[i].id === card.id) {
             this.revealedCards.splice(i, 1);
@@ -100,7 +98,7 @@ GameState.prototype.concealCard = function(gameState) {
         const card = document.getElementById(ca.target["id"]);
         card.setAttribute("src", "images/logo.png");
         card.addEventListener("click", gameState.revealCard(gameState));
-        card.removeEventListener("click", refer, false);
+        card.removeEventListener("click", referConceal, false);
         for( var i = 0; i < gameState.revealedCards.length; i++) {
             if(gameState.revealedCards[i].id === card.id) {
                 gameState.revealedCards.splice(i, 1);
@@ -114,7 +112,7 @@ GameState.prototype.revealCard = function(gameState) {
     return function reveal(ca) {
         const card = document.getElementById(ca.target["id"]);
         card.setAttribute("src", "images/" + ca.target["id"].charAt(0) + ".png")
-        card.addEventListener("click", refer);
+        card.addEventListener("click", referConceal);
         card.removeEventListener("click", reveal, false);
         gameState.revealedCards.push(card);
         gameState.playRound("A");
@@ -130,7 +128,7 @@ GameState.prototype.initializeCards = function() {
     });
 }
 
-const refer = gs.concealCard(gs); // Special reference for a function
+const referConceal = gs.concealCard(gs); // Special reference for a function
 gs.initializeCards();
 
 

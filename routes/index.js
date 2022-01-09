@@ -11,7 +11,6 @@ router.get("/play", function(req, res) {
 
 /* GET home page. */
 router.get("/", function(req, res,) {
-  console.log("eo");
   res.sendFile("splash.html", {root: "./public"});
 });
 
