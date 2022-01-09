@@ -33,7 +33,7 @@ setInterval(function() {
             }
         }
     }
-}, 5000);
+}, 50000);
 
 let currentGame = new Game(gamesInitialized++);
 let connectionID = 0;
@@ -45,10 +45,13 @@ wss.on("connection", function connection(ws) {
     websockets[con["id"]] = currentGame;
 
     console.log(
-        'Player ${con["id]} placed in game ${currentGame.id} as ${playerType}'
+        'Player ${con["id"]} placed in game ${currentGame.id} as ${playerType}'
     );
 
     con.send(playerType == "A" ? messages.S_PLAYER_A : messages.S_PLAYER_B)
+    if(playerType == "A") {
+        con.send(messages.O_CHOOSE);
+    }
 
     if(currentGame.hasTwoPlayers()) {
         currentGame = new Game(gamesInitialized++);
@@ -58,6 +61,54 @@ wss.on("connection", function connection(ws) {
         const oMsg = JSON.parse(message.toString());
 
         const gameObj = websockets[con["id"]];
+        const isPlayerA = gameObj.playerA == con ? true : false;
+
+        if(isPlayerA) {
+            if(oMsg.type == messages.T_TARGET_CARDS) {
+                gameObj.playerB.send(message);
+            }
+            if(oMsg.type == messages.T_SCORE) {
+                gameObj.playerB.send(message);
+            }
+
+        } else {
+            if(oMsg.type == messages.T_TARGET_CARDS) {
+                gameObj.playerA.send(message);
+            }
+            if(oMsg.type == messages.T_SCORE) {
+                gameObj.playerA.send(message);
+            }
+        }
+
+        if(oMsg.type == messages.T_GAME_OVER) {
+            gameObj.setStatus(oMsg.data);f
+        }
+    })
+
+    con.on("close", function(code) {
+        console.log('${con["id]} disconnected ...');
+
+        if(code == 1001) {
+            const gameObj = websockets[con["id"]];
+
+            if(gameObj.isValidTransition(gameObj.gameState, "ABORTED")) {
+                gameObj.setStatus("ABORTED");
+            }
+
+            try {
+                gameObj.playerA.close();
+                gameObj.playerA = null;
+              } catch (e) {
+                console.log("Player A closing: " + e);
+              }
+      
+              try {
+                gameObj.playerB.close();
+                gameObj.playerB = null;
+              } catch (e) {
+                console.log("Player B closing: " + e);
+              }
+        }
     })
 })
 
