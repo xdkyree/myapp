@@ -137,7 +137,7 @@ GameState.prototype.updateGame = function() {
 
 
 function setup() {
-    const socket = new WebSocket(Setup.WEB_SOCKET_URL);
+    const socket = new WebSocket("ws://localhost:3000");
 
     var sb = null;
 
@@ -152,8 +152,8 @@ function setup() {
         }
         if(incomingMsg.type == Messages.T_TARGET_CARDS) {
             gs.enemyCards = incomingMsg.data;
-            gs.revealOpponentCard(oppo[0]);
-            gs.revealOpponentCard(oppo[1]);
+            gs.revealOpponentCard(gs.enemyCards[0]);
+            gs.revealOpponentCard(gs.enemyCards[1]);
         }
         if(incomingMsg.type == Messages.T_SCORE) {
             gs.incEnemyScore();
