@@ -49,7 +49,7 @@ wss.on("connection", function connection(ws) {
     websockets[con["id"]] = currentGame;
 
     console.log(
-        'Player ${con["id"]} placed in game ${currentGame.id} as ${playerType}'
+        `Player ${con["id"]} placed in game ${currentGame.id} as ${playerType}`
     );
 
     con.send(playerType == "A" ? messages.S_PLAYER_A : messages.S_PLAYER_B)
@@ -90,7 +90,7 @@ wss.on("connection", function connection(ws) {
     })
 
     con.on("close", function(code) {
-        console.log('${con["id]} disconnected ...');
+        console.log(`${con["id"]} disconnected ...`);
 
         if(code == 1001) {
             const gameObj = websockets[con["id"]];
