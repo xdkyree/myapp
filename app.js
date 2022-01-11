@@ -49,7 +49,7 @@ wss.on("connection", function connection(ws) {
     websockets[con["id"]] = currentGame;
 
     console.log(
-        `Player ${con["id"]} placed in game ${currentGame.id} as ${playerType}`
+        `Player ` + con["id"] + `placed in game ` + currentGame.id
     );
 
     con.send(playerType == "A" ? messages.S_PLAYER_A : messages.S_PLAYER_B)
@@ -62,14 +62,16 @@ wss.on("connection", function connection(ws) {
     }
 
     con.on("message", function incoming(message) {
-        const oMsg = JSON.parse(message.toString());
+        const oMsg = JSON.parse(message);
 
         const gameObj = websockets[con["id"]];
         const isPlayerA = gameObj.playerA == con ? true : false;
 
         if(isPlayerA) {
             if(oMsg.type == messages.T_TARGET_CARDS) {
-                gameObj.playerB.send(message);
+                var msg = messages.O_TARGET_CARDS;
+                msg.data = oMsg.data;
+                gameObj.playerB.send(JSON.stringify(msg));
             }
             if(oMsg.type == messages.T_SCORE) {
                 gameObj.playerB.send(message);
@@ -85,7 +87,7 @@ wss.on("connection", function connection(ws) {
         }
 
         if(oMsg.type == messages.T_GAME_OVER) {
-            gameObj.setStatus(oMsg.data);f
+            gameObj.setStatus(oMsg.data);
         }
     })
 

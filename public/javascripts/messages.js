@@ -13,10 +13,12 @@
       };
     exports.S_GAME_ABORTED = JSON.stringify(exports.O_GAME_ABORTED);
     // S -> C
-    exports.O_CHOOSE = { type: "CHOOSE-CARD" };
-    exports.S_CHOOSE = JSON.stringify(exports.O_CHOOSE);
+    exports.T_CHOOSE = "CHOOSE";
+    exports.O_CHOOSE = {
+        type: exports.T_CHOOSE,
+    };
     // C -> S or S -> C inform about card choice
-    exports.T_TARGET_CARDS = "SET-TARGET-CARDS";
+    exports.T_TARGET_CARDS = "TARGET-CARDS";
     exports.O_TARGET_CARDS = {
         type: exports.T_TARGET_CARDS,
         data: null,
