@@ -74,15 +74,19 @@ wss.on("connection", function connection(ws) {
                 gameObj.playerB.send(JSON.stringify(msg));
             }
             if(oMsg.type == messages.T_SCORE) {
-                gameObj.playerB.send(message);
+                var msg = messages.O_SCORE;
+                gameObj.playerB.send(JSON.stringify(msg));
             }
 
         } else {
             if(oMsg.type == messages.T_TARGET_CARDS) {
-                gameObj.playerA.send(message);
+                var msg = messages.O_TARGET_CARDS;
+                msg.data = oMsg.data;
+                gameObj.playerA.send(JSON.stringify(msg));
             }
             if(oMsg.type == messages.T_SCORE) {
-                gameObj.playerA.send(message);
+                var msg = messages.O_SCORE;
+                gameObj.playerA.send(JSON.stringify(msg));
             }
         }
 

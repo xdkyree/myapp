@@ -31,6 +31,7 @@ GameState.prototype.setRevealedCards = function(p) {
 
 GameState.prototype.incEnemyScore = function() {
     this.enemyScore++;
+    document.getElementById("bScore").textContent = "Red player score: " + this.enemyScore;
 }
 
 GameState.prototype.whoWon = function() {
@@ -84,11 +85,16 @@ GameState.prototype.conceal = function ConcealFunc(ca) {
 }
 
 GameState.prototype.revealOpponentCard = function(ca) {
-    const card = document.getElementById(ca);
-    ca.setAttribute("src", "images/" + ca.id.charAt(0) + ".png")
+    var card;
+    for(var i = 0; i < this.availableCards.length; i++) {
+        if(this.availableCards[i].id === ca) {
+            card = this.availableCards[i];
+        }
+    }
+    card.setAttribute("src", "images/" + ca.charAt(0) + ".png")
     setTimeout(function() {
-        ca.setAttribute("src", "images/logo.png");
-    } , 500);
+        card.setAttribute("src", "images/logo.png");
+    } , 2500);
 }
 
 GameState.prototype.concealWrong = function(ca) {
@@ -122,7 +128,6 @@ GameState.prototype.updateGame = function() {
         // @ts-ignore
         var outMsg = Messages.O_TARGET_CARDS;
         outMsg.data = [this.revealedCards[0].id, this.revealedCards[1].id];
-        console.log(JSON.stringify(outMsg));
         this.socket.send(JSON.stringify(outMsg));
          if(this.revealedCards[0].id.charAt(0) === this.revealedCards[1].id.charAt(0)) {
              this.score++;
@@ -161,12 +166,8 @@ function setup() {
     gs.initializeCards();
     socket.binaryType = "arraybuffer";
     socket.onmessage = function (event) {
-        let incomingMsg;
-        incomingMsg = JSON.parse(event.data);
-        console.log(incomingMsg);
+        let incomingMsg = JSON.parse(event.data);
         
-        
-
         // @ts-ignore
         if(incomingMsg.type == Messages.T_CHOOSE ) {
             alert("You can choose now!");
@@ -178,14 +179,25 @@ function setup() {
         // @ts-ignore
         if(incomingMsg.type == Messages.T_TARGET_CARDS) {
             gs.enemyCards = incomingMsg.data;
+            alert("Opponnent choice!");
             gs.revealOpponentCard(gs.enemyCards[0]);
             gs.revealOpponentCard(gs.enemyCards[1]);
-            alert("You can choose now!");
+            setTimeout(function() {
+                alert("Your choice!");
+            }, 2500);
         }
         // @ts-ignore
         if(incomingMsg.type == Messages.T_SCORE) {
             gs.incEnemyScore();
-            gs.matchCards(gs.enemyCards);
+            var holder = [];
+            for(var i = 0; i < gs.availableCards.length; i++) {
+                var card = gs.availableCards[i];
+                if(card.id === gs.enemyCards[0] || card.id === gs.enemyCards[1]) {
+                    holder.push(card);
+                }
+            }
+            gs.enemyCards = holder;
+            gs.matchCards(holder);
         }
     }
 
