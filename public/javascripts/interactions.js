@@ -14,7 +14,6 @@ function GameState(sb, socket) {
     this.socket = socket;
     this.enemyCards = [];
     this.revealBind = this.reveal.bind(this);
-    this.concealBind = this.conceal.bind(this);
 }
 
 GameState.prototype.getPlayerType = function() {
@@ -53,7 +52,6 @@ GameState.prototype.whoWon = function() {
 GameState.prototype.reveal = function RevealFunc(ca) {
     const card = document.getElementById(ca.target["id"]);
     card.setAttribute("src", "images/" + ca.target["id"].charAt(0) + ".png")
-    card.addEventListener("click",this.concealBind, {once: true} );
     this.revealedCards.push(card);
     this.updateGame();
 }
@@ -64,25 +62,23 @@ GameState.prototype.matchCards = function(ca) {
         for(var i =0; i < parentThis.availableCards.length; i++) {
             if(parentThis.availableCards[i].id === el.id) {
                 parentThis.availableCards.splice(i,1);
-                var newElement = el.cloneNode();
-                newElement.setAttribute("src", "images/cat.png");
-                el.replaceWith(newElement);
-                parentThis.usedCards.push(el);
+                el.click();
+                el.setAttribute("src", "images/cat.png");
             }
-        }
+            }
     })
 }
 
-GameState.prototype.conceal = function ConcealFunc(ca) {
-    const card = document.getElementById(ca.target["id"]);
-    card.setAttribute("src", "images/logo.png");
-    card.addEventListener("click", this.revealBind, {once: true});
-    for( var i = 0; i < this.revealedCards.length; i++) {
-        if(this.revealedCards[i].id === card.id) {
-            this.revealedCards.splice(i, 1);
-        }
-    }
-}
+// GameState.prototype.conceal = function ConcealFunc(ca) {
+//     const card = document.getElementById(ca.target["id"]);
+//     card.setAttribute("src", "images/logo.png");
+//     card.addEventListener("click", this.revealBind, {once: true});
+//     for( var i = 0; i < this.revealedCards.length; i++) {
+//         if(this.revealedCards[i].id === card.id) {
+//             this.revealedCards.splice(i, 1);
+//         }
+//     }
+// }
 
 GameState.prototype.revealOpponentCard = function(ca) {
     var card;
@@ -92,8 +88,11 @@ GameState.prototype.revealOpponentCard = function(ca) {
         }
     }
     card.setAttribute("src", "images/" + ca.charAt(0) + ".png")
+    var parentThis = this;
     setTimeout(function() {
-        card.setAttribute("src", "images/logo.png");
+        if(parentThis.availableCards.includes(card)) {
+            card.setAttribute("src", "images/logo.png");
+        }
     } , 2500);
 }
 
@@ -109,9 +108,7 @@ GameState.prototype.concealWrong = function(ca) {
                 this.availableCards.splice(i, 1);
             }
         }
-        var newElement = ca.cloneNode();
-        newElement.addEventListener("click", this.reveal.bind(this),{once: true}); 
-        ca.replaceWith(newElement);
+        ca.addEventListener("click", this.reveal.bind(this),{once: true}); 
         this.availableCards.push(ca);
 }
 
@@ -146,11 +143,13 @@ GameState.prototype.updateGame = function() {
              }
              
          } else {
-             var parentThis = this;
-             setTimeout(function() {
-                parentThis.concealWrong(parentThis.revealedCards[0]);
-                parentThis.concealWrong(parentThis.revealedCards[0]);
-                 alert("Wrong Cards!");
+            var parentThis = this;
+            setTimeout(function() {
+                if(parentThis.availableCards.includes(parentThis.revealedCards[0])) {
+                    parentThis.concealWrong(parentThis.revealedCards[0]);
+                    parentThis.concealWrong(parentThis.revealedCards[0]);
+                    alert("Wrong Cards!");
+                }
              }, 500)
          }
      }
