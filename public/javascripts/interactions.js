@@ -157,7 +157,7 @@ GameState.prototype.updateGame = function() {
 
 function setup() {
     // @ts-ignore
-    const socket = new WebSocket("wss://0.0.0.0:3000");
+    const socket = new WebSocket("ws://localhost:3000");
 
     var sb = null;
 

@@ -2,7 +2,7 @@ const express = require("express");
 const http = require("http");
 const websocket = require("ws");
 
-// const indexRouter = require("./routes/index");
+const indexRouter = require("./routes/index");
 const messages = require("./public/javascripts/messages");
 
 
@@ -21,13 +21,8 @@ app.set("view engine", "ejs");
 app.use(express.static(__dirname + "/public"));
 
 
-//app.get("/play", indexRouter);
-app.get("/", (req, res) => {
-    res.render("splash.ejs", 
-    { gamesPlayed: gameStatus.gamesPlayed, 
-      playersOnline: gameStatus.playersOnline, 
-      winRatio: gameStatus.winRatio });
-});
+app.get("/play", indexRouter);
+app.get("/", indexRouter);
 
 const server = http.createServer(app);
 const wss = new websocket.Server({ server });
