@@ -32,13 +32,11 @@ h1{
   }
 
 .footer{
-    position: fixed;
+    position:absolute;
     left: 0;
     bottom: 0;
     width: 100%;
-    text-align: center;
     color: white;
-    height: 5%;
     background-color: #00a6d8;
 }
 
