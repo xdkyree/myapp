@@ -14,7 +14,8 @@ router.get("/", function(req, res,) {
   res.render("splash.ejs", 
   { gamesPlayed: gameStatus.gamesPlayed, 
     playersOnline: gameStatus.playersOnline, 
-    winRatio: gameStatus.winRatio });
+    aWins: gameStatus.aWins,
+    bWins: gameStatus.bWins });
 });
 
 module.exports = router;

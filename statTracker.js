@@ -7,9 +7,6 @@
     playersOnline: 0 ,
     aWins: 0,
     bWins: 0,
-    winRatio : function() {
-        return this.aWins/this.bWins;
-    } 
   };
 
   

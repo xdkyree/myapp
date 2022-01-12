@@ -10,7 +10,6 @@ function GameState(sb, socket) {
     this.usedCards = [];
     this.cards = document.querySelectorAll(".card");
     this.availableCards = Array.from(this.cards);
-    this.statusBar = sb;
     this.socket = socket;
     this.enemyCards = [];
     this.revealBind = this.reveal.bind(this);
@@ -62,17 +61,6 @@ GameState.prototype.matchCards = function(ca) {
     })
 }
 
-// GameState.prototype.conceal = function ConcealFunc(ca) {
-//     const card = document.getElementById(ca.target["id"]);
-//     card.setAttribute("src", "images/logo.png");
-//     card.addEventListener("click", this.revealBind, {once: true});
-//     for( var i = 0; i < this.revealedCards.length; i++) {
-//         if(this.revealedCards[i].id === card.id) {
-//             this.revealedCards.splice(i, 1);
-//         }
-//     }
-// }
-
 GameState.prototype.revealOpponentCard = function(ca) {
     var card;
     for(var i = 0; i < this.availableCards.length; i++) {
@@ -96,19 +84,25 @@ GameState.prototype.concealWrong = function(ca) {
                 this.revealedCards.splice(i, 1);
             }
         }
-        ca.addEventListener("click", this.revealBind,{once: true}); 
 }
 
 GameState.prototype.initializeCards = function() {
     var parentThis = this;
     this.availableCards.forEach( function (element) {
-        element.setAttribute("src", "images/logo.png");
         element.addEventListener("click", parentThis.revealBind, {once: true});
+    })
+}
+
+GameState.prototype.deactivateCards = function() {
+    var parentThis = this;
+    this.availableCards.forEach( function(element) {
+        element.removeEventListener("click", parentThis.revealBind, false);
     })
 }
 
 GameState.prototype.updateGame = function() {
      if(this.revealedCards.length == 2) {
+         this.deactivateCards();
         // @ts-ignore
         var outMsg = Messages.O_TARGET_CARDS;
         outMsg.data = [this.revealedCards[0].id, this.revealedCards[1].id];
@@ -162,14 +156,16 @@ function setup() {
     var sb = null;
 
     const gs = new GameState(sb, socket);
-    gs.initializeCards();
     socket.binaryType = "arraybuffer";
     socket.onmessage = function (event) {
         let incomingMsg = JSON.parse(event.data);
         
         // @ts-ignore
         if(incomingMsg.type == Messages.T_CHOOSE ) {
-            alert("You can choose now!");
+            gs.initializeCards();
+            setTimeout(function() {
+                alert("You can play now!");
+            }, 250);
         }
         // @ts-ignore
         if(incomingMsg.type == Messages.T_PLAYER_TYPE) {
@@ -183,6 +179,7 @@ function setup() {
             gs.revealOpponentCard(gs.enemyCards[1]);
             setTimeout(function() {
                 alert("Your choice!");
+                gs.initializeCards();
             }, 2500);
         }
         // @ts-ignore

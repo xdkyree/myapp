@@ -5,24 +5,30 @@ h1{
 }
 
 .button {
-    display: inline-block;
     border-radius: 100px;
-    background-color: #00a6d8;
-    border: none;
-    color: #FFFFFF;
+    border: 0px;
+    background-color: white;
+    color: #00a6d8;
     text-align: center;
     font-size: 34px;
     font-family: 'DM Sans', sans-serif;
     padding: 20px;
-    width: auto;
-    transition: all 0.5s;
-    cursor: normal;
+    width: 15%;
+    transition: 0.5s;
     margin: 5px;
-    font-weight: 500;
+    box-shadow: 0px 8px 15px grey;
+    cursor: pointer;
   }
 
   .button:hover {
+    background-color: #00a6d8;
+    color: white;
+    transform: scale(1.1);
+  }
 
+  .button:active {
+    transition: 0.1s;
+    transform: scale(1);
   }
 
 .footer{
@@ -31,7 +37,35 @@ h1{
     bottom: 0;
     width: 100%;
     text-align: center;
-    background-color: #00a6d8;
     color: white;
     height: 5%;
+    background-color: #00a6d8;
+}
+
+.cloud{ 
+  margin-top:70px;
+  width:350px;
+  height:120px;
+  background:#ECEFF1;
+  box-shadow: 10px 10px rgba(0,0,0,0.2);
+  border-radius:100px;
+}
+.cloud::after, .cloud::before{
+   content:"";
+   position:relative;
+   display:inline-block;
+   background:inherit;
+   border-radius:inherit;
+}
+.cloud::after{
+   width:100px;
+   height:100px;
+   top:-220px;
+   left:50px;
+}
+.cloud::before{
+   width:180px;
+   height:180px;
+   top: -70px;
+   left:130px;
 }
