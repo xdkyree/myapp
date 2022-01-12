@@ -2,7 +2,7 @@
 /* eslint-disable no-undef */
 
 
-function GameState(sb, socket) {
+function GameState(socket) {
     this.playerType = null;
     this.score = 0;
     this.enemyScore = 0;
@@ -153,13 +153,17 @@ function setup() {
     // @ts-ignore
     const socket = new WebSocket("ws://localhost:3000");
 
-    var sb = null;
-
-    const gs = new GameState(sb, socket);
+    const gs = new GameState(socket);
     socket.binaryType = "arraybuffer";
     socket.onmessage = function (event) {
         let incomingMsg = JSON.parse(event.data);
-        
+    
+        // @ts-ignore
+        if(incomingMsg.type == Messages.T_WAIT) {
+            alert("Please wait for opponent!");
+        }
+
+
         // @ts-ignore
         if(incomingMsg.type == Messages.T_CHOOSE ) {
             gs.initializeCards();
@@ -203,7 +207,11 @@ function setup() {
             } else {
                 alert("You lost!");
             }
+        }
 
+        // @ts-ignore
+        if(incomingMsg.type == Messages.T_GAME_ABORTED) {
+            alert("Opponent left. You win!");
         }
     }
 
