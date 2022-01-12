@@ -8,6 +8,7 @@ const messages = require("./public/javascripts/messages");
 
 const gameStatus = require("./statTracker");
 const Game = require("./game");
+const game = require("./game");
 
 if(process.argv.length < 3) {
     console.log("Error: expected a port as argument");
@@ -42,7 +43,7 @@ setInterval(function() {
 }, 50000);
 
 
-let currentGame = new Game(gamesInitialized++);
+let currentGame = new Game(gameStatus.gamesPlayed++);
 let connectionID = 0;
 
 wss.on("connection", function connection(ws) {
@@ -58,11 +59,14 @@ wss.on("connection", function connection(ws) {
 
     con.send(playerType == "A" ? messages.S_PLAYER_A : messages.S_PLAYER_B)
     if(playerType == "A") {
-        con.send(JSON.stringify(messages.O_CHOOSE));
+        con.send(JSON.stringify(messages.O_WAIT));
+    } else {
+        currentGame.playerA.send(JSON.stringify(messages.O_CHOOSE));
     }
 
     if(currentGame.hasTwoPlayers()) {
-        currentGame = new Game(gamesInitialized++);
+        console.log("[STATUS] Game number " + (gameStatus.gamesPlayed - 1) + " has started");
+        currentGame = new Game(gameStatus.gamesPlayed++);
     }
 
     con.on("message", function incoming(message) {
@@ -76,6 +80,7 @@ wss.on("connection", function connection(ws) {
                 var msg = messages.O_TARGET_CARDS;
                 msg.data = oMsg.data;
                 gameObj.playerB.send(JSON.stringify(msg));
+                gameObj.setStatus("A GUESS");
             }
             if(oMsg.type == messages.T_SCORE) {
                 var msg = messages.O_SCORE;
@@ -87,9 +92,13 @@ wss.on("connection", function connection(ws) {
                 gameObj.playerB.send(JSON.stringify(msg));
                 if(msg.data === "A") {
                     gameStatus.aWins++;
+                    gameObj.setStatus("A");
                 } else {
                     gameStatus.bWins++;
+                    gameObj.setStatus("B");
                 }
+                gameObj.playerB.close();
+                gameObj.playerB.close();
             }
 
         } else {
@@ -97,6 +106,7 @@ wss.on("connection", function connection(ws) {
                 var msg = messages.O_TARGET_CARDS;
                 msg.data = oMsg.data;
                 gameObj.playerA.send(JSON.stringify(msg));
+                gameObj.setStatus("B GUESS");
             }
             if(oMsg.type == messages.T_SCORE) {
                 var msg = messages.O_SCORE;
@@ -108,15 +118,19 @@ wss.on("connection", function connection(ws) {
                 gameObj.playerA.send(JSON.stringify(msg));
                 if(msg.data === "A") {
                     gameStatus.aWins++;
+                    gameObj.setStatus("A");
                 } else {
                     gameStatus.bWins++;
+                    gameObj.setStatus("B");
                 }
+                gameObj.playerB.close();
+                gameObj.playerB.close();
             }
         }
     })
 
     con.on("close", function(code) {
-        console.log(`${con["id"]} disconnected ...`);
+        console.log(`Game ${con["id"]} disconnected ...`);
 
         if(code == 1001) {
             const gameObj = websockets[con["id"]];
@@ -127,6 +141,7 @@ wss.on("connection", function connection(ws) {
             gameStatus.playersOnline--;
 
             try {
+                gameObj.playerA.send(JSON.stringify(messages.T_GAME_ABORTED))
                 gameObj.playerA.close();
                 gameObj.playerA = null;
               } catch (e) {
@@ -134,6 +149,7 @@ wss.on("connection", function connection(ws) {
               }
       
               try {
+                gameObj.playerB.send(JSON.stringify(messages.T_GAME_ABORTED))
                 gameObj.playerB.close();
                 gameObj.playerB = null;
               } catch (e) {
