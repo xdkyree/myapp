@@ -49,7 +49,7 @@ wss.on("connection", function connection(ws) {
     websockets[con["id"]] = currentGame;
 
     console.log(
-        `Player ` + con["id"] + `placed in game ` + currentGame.id
+        `Player ` + con["id"] + ` placed in game ` + currentGame.id
     );
 
     con.send(playerType == "A" ? messages.S_PLAYER_A : messages.S_PLAYER_B)
