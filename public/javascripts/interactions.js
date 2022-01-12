@@ -103,7 +103,7 @@ GameState.prototype.concealWrong = function(ca) {
                 this.revealedCards.splice(i, 1);
             }
         }
-        ca.addEventListener("click", this.reveal.bind(this),{once: true}); 
+        ca.addEventListener("click", this.revealBind,{once: true}); 
 }
 
 GameState.prototype.initializeCards = function() {
