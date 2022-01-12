@@ -22,16 +22,16 @@
         <cloud class="cloud"></cloud>
         </section>
 </main>
-<div class ="footer"><p><%= gamesPlayed %> 
+<div class ="footer"><div class="grid-container"><p><%= gamesPlayed %> 
     <%if (gamesPlayed != 1) { %>
         games
     <% } else { %>
         game
     <% } %>
-    played, 
-    <%= playersOnline %> 
-    players online
-    <%= aWins/bWins %>
-    current winratio of player A to B</p></div>
+    played </p>
+   <p><%= playersOnline %> 
+    players online </p>
+    <p><%= aWins/bWins %>
+    current winratio of player A to B</p></div></div>
 </body>
 </html>

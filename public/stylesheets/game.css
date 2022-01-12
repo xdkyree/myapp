@@ -1,1 +1,35 @@
 @import "style.css";
+
+  .button1 {
+    border-radius: 100px;
+    border: 0px;
+    background-color: white;
+    color: #00a6d8;
+    text-align: center;
+    font-size: 34px;
+    font-family: 'DM Sans', sans-serif;
+    padding: 20px;
+    width: 15%;
+    transition: 0.5s;
+    margin: 5px;
+    box-shadow: 0px 8px 15px grey;
+    cursor: pointer;
+  }
+
+  .button1:hover {
+    background-color: #00a6d8;
+    color: white;
+    transform: scale(1.1);
+  }
+
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(4, 0.12fr);
+    grid-gap: 20px;
+    align-items: stretch;
+    justify-items: stretch;
+}
+
+.grid-container img {
+    max-width: 100%;
+  }

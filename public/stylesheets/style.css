@@ -4,3 +4,46 @@ body{
             color: #00a6d8;
             text-align: center;
 }
+@media (max-width: 799px), (max-height: 799px) {
+  body::before {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 20px;
+    color: #00a6d8;
+    padding: 20px;
+    content: "Your window is too small (at least 800x800px is expected) to play this game. Enlarge the browser window or zoom out to play!";
+    background-color: white;
+    z-index: 100;
+  }
+}
+
+.button {
+  border-radius: 100px;
+  border: 0px;
+  background-color: white;
+  color: #00a6d8;
+  text-align: center;
+  font-size: 34px;
+  font-family: 'DM Sans', sans-serif;
+  padding: 20px;
+  width: 15%;
+  transition: 0.5s;
+  margin: 5px;
+  box-shadow: 0px 8px 15px grey;
+  cursor: pointer;
+}
+
+.button:hover {
+  background-color: #00a6d8;
+  color: white;
+  transform: scale(1.1);
+}
+
+.button:active {
+  transition: 0.1s;
+  transform: scale(1);
+}

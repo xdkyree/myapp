@@ -43,7 +43,7 @@ setInterval(function() {
 }, 50000);
 
 
-let currentGame = new Game(gameStatus.gamesPlayed++);
+let currentGame = new Game(gameStatus.gamesPlayed);
 let connectionID = 0;
 
 wss.on("connection", function connection(ws) {
@@ -66,7 +66,7 @@ wss.on("connection", function connection(ws) {
 
     if(currentGame.hasTwoPlayers()) {
         console.log("[STATUS] Game number " + (gameStatus.gamesPlayed - 1) + " has started");
-        currentGame = new Game(gameStatus.gamesPlayed++);
+        currentGame = new Game(++gameStatus.gamesPlayed);
     }
 
     con.on("message", function incoming(message) {
