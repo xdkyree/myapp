@@ -62,8 +62,8 @@ GameState.prototype.matchCards = function(ca) {
         for(var i =0; i < parentThis.availableCards.length; i++) {
             if(parentThis.availableCards[i].id === el.id) {
                 parentThis.availableCards.splice(i,1);
-                el.click();
                 el.setAttribute("src", "images/cat.png");
+                el.removeEventListener("click", parentThis.revealBind, false);
             }
             }
     })
@@ -103,20 +103,14 @@ GameState.prototype.concealWrong = function(ca) {
                 this.revealedCards.splice(i, 1);
             }
         }
-        for( var i = 0; i < this.availableCards.length; i++) {
-            if(this.availableCards[i].id === ca.id) {
-                this.availableCards.splice(i, 1);
-            }
-        }
         ca.addEventListener("click", this.reveal.bind(this),{once: true}); 
-        this.availableCards.push(ca);
 }
 
 GameState.prototype.initializeCards = function() {
     var parentThis = this;
     this.availableCards.forEach( function (element) {
         element.setAttribute("src", "images/logo.png");
-        element.addEventListener("click", parentThis.reveal.bind(parentThis), {once: true});
+        element.addEventListener("click", parentThis.revealBind, {once: true});
     })
 }
 
