@@ -2,9 +2,11 @@ const express = require("express");
 const http = require("http");
 const websocket = require("ws");
 
-const indexRouter = require("./routes/index");
+// const indexRouter = require("./routes/index");
 const messages = require("./public/javascripts/messages");
 
+
+const gameStatus = require("./statTracker");
 const Game = require("./game");
 
 if(process.argv.length < 3) {
@@ -15,11 +17,17 @@ if(process.argv.length < 3) {
 const port = process.argv[2];
 const app = express();
 
-
-
+app.set("view engine", "ejs");
 app.use(express.static(__dirname + "/public"));
-app.get("/play", indexRouter);
-app.get("/", indexRouter);
+
+
+//app.get("/play", indexRouter);
+app.get("/", (req, res) => {
+    res.render("splash.ejs", 
+    { gamesPlayed: gameStatus.gamesPlayed, 
+      playersOnline: gameStatus.playersOnline, 
+      winRatio: gameStatus.winRatio });
+});
 
 const server = http.createServer(app);
 const wss = new websocket.Server({ server });
@@ -47,6 +55,7 @@ wss.on("connection", function connection(ws) {
     con["id"] = connectionID++;
     const playerType = currentGame.addPlayer(con);
     websockets[con["id"]] = currentGame;
+    gameStatus.playersOnline++;
 
     console.log(
         `Player ` + con["id"] + ` placed in game ` + currentGame.id
@@ -77,6 +86,16 @@ wss.on("connection", function connection(ws) {
                 var msg = messages.O_SCORE;
                 gameObj.playerB.send(JSON.stringify(msg));
             }
+            if(oMsg.type == messages.T_GAME_WON_BY) {
+                var msg = messages.O_GAME_WON_BY;
+                msg.data = oMsg.data;
+                gameObj.playerB.send(JSON.stringify(msg));
+                if(msg.data === "A") {
+                    gameStatus.aWins++;
+                } else {
+                    gameStatus.bWins++;
+                }
+            }
 
         } else {
             if(oMsg.type == messages.T_TARGET_CARDS) {
@@ -88,10 +107,16 @@ wss.on("connection", function connection(ws) {
                 var msg = messages.O_SCORE;
                 gameObj.playerA.send(JSON.stringify(msg));
             }
-        }
-
-        if(oMsg.type == messages.T_GAME_OVER) {
-            gameObj.setStatus(oMsg.data);
+            if(oMsg.type == messages.T_GAME_WON_BY) {
+                var msg = messages.O_GAME_WON_BY;
+                msg.data = oMsg.data;
+                gameObj.playerA.send(JSON.stringify(msg));
+                if(msg.data === "A") {
+                    gameStatus.aWins++;
+                } else {
+                    gameStatus.bWins++;
+                }
+            }
         }
     })
 
@@ -104,6 +129,7 @@ wss.on("connection", function connection(ws) {
             if(gameObj.isValidTransition(gameObj.gameState, "ABORTED")) {
                 gameObj.setStatus("ABORTED");
             }
+            gameStatus.playersOnline--;
 
             try {
                 gameObj.playerA.close();

@@ -41,11 +41,5 @@
         data: "B",
     };
     exports.S_PLAYER_B = JSON.stringify(exports.O_PLAYER_B);
-    // S -> C with game result
-    exports.T_GAME_OVER = "GAME-OVER";
-    exports.O_GAME_OVER = {
-        type: exports.T_GAME_OVER,
-        data: null,
-    };
 // @ts-ignore
 })(typeof exports === "undefined" ? ( this.Messages = {}) : exports);

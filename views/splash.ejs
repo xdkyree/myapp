@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="stylesheets/style.css" />
+    <title>delftory - Simple Memory Game</title>
+    <style>
+        h1{
+            font-size: 100px;
+        }
+        footer{
+            vertical-align: text-bottom;
+        }
+        .button {
+            display: inline-block;
+            border-radius: 8px;
+            background-color: #00a6d8;
+            border: none;
+            color: #FFFFFF;
+            text-align: center;
+            font-size: 28px;
+            font-family: 'DM Sans', sans-serif;
+            padding: 20px;
+            width: 150px;
+            transition: all 0.5s;
+            cursor: pointer;
+            margin: 5px;
+}
+    </style>
+</head>
+<body>
+<main>
+    <section id="top">
+        <h1>
+            delftory
+        </h1>
+        <h2><%= gamesPlayed %> 
+                    <%if (gamesPlayed != 1) { %>
+                        games
+                    <% } else { %>
+                        game
+                    <% } %>
+                    played, 
+                    <%= playersOnline %> 
+                    players online
+                    <%= winRatio %>
+                    current winratio of player A to B
+        </h2>
+        <form action="game.html" method="get" >
+            <button class="button" style="vertical-align:middle"><span>play </span></button>
+        </form>
+        </section>
+</main>
+<footer><a href=licensing</footer>
+</body>
+</html>

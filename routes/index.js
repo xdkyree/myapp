@@ -1,17 +1,20 @@
 var express = require('express');
 var router = express.Router();
 
+const gameStatus = require("../statTracker");
+
 
 router.get("/play", function(req, res) {
   res.sendFile("game.html", {root: "./public"});
 })
 
 
-
-
 /* GET home page. */
 router.get("/", function(req, res,) {
-  res.sendFile("splash.html", {root: "./public"});
+  res.render("splash.ejs", 
+  { gamesPlayed: gameStatus.gamesPlayed, 
+    playersOnline: gameStatus.playersOnline, 
+    winRatio: gameStatus.winRatio });
 });
 
 module.exports = router;

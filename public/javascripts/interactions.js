@@ -16,21 +16,14 @@ function GameState(sb, socket) {
     this.revealBind = this.reveal.bind(this);
 }
 
-GameState.prototype.getPlayerType = function() {
-    return this.playerType;
-} 
 
 GameState.prototype.setPlayerType = function(p) {
     this.playerType = p;
 }
 
-GameState.prototype.setRevealedCards = function(p) {
-    this.revealedCards = p;
-}
-
 GameState.prototype.incEnemyScore = function() {
     this.enemyScore++;
-    document.getElementById("bScore").textContent = "Red player score: " + this.enemyScore;
+    document.getElementById("bScore").textContent = "Opponent score: " + this.enemyScore;
 }
 
 GameState.prototype.whoWon = function() {
@@ -134,6 +127,18 @@ GameState.prototype.updateGame = function() {
                  }, 500)
                  // @ts-ignore
                  outMsg = Messages.O_GAME_WON_BY;
+                 if(this.score > this.enemyScore) {
+                     outMsg.data = this.playerType;
+                     alert("You won!");
+                 } else {
+                     if(this.playerType === "A") {
+                         outMsg.data = "B";
+                     } else {
+                         outMsg.data = "A";
+                     }
+                     alert("You lost!");
+                 }
+                 this.socket.send(JSON.stringify(outMsg));
              }
              
          } else {
@@ -151,7 +156,8 @@ GameState.prototype.updateGame = function() {
 
 
 function setup() {
-    const socket = new WebSocket("ws://localhost:3000");
+    // @ts-ignore
+    const socket = new WebSocket("wss://0.0.0.0:3000");
 
     var sb = null;
 
@@ -191,6 +197,16 @@ function setup() {
             }
             gs.enemyCards = holder;
             gs.matchCards(holder);
+        }
+
+        // @ts-ignore
+        if(incomingMsg.type == Messages.T_GAME_WON_BY) {
+            if(incomingMsg.data === gs.playerType) {
+                alert("You Won!");
+            } else {
+                alert("You lost!");
+            }
+
         }
     }
 
