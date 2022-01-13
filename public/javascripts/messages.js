@@ -7,11 +7,6 @@
         type: exports.T_GAME_WON_BY,
         data: null,
     };
-    // S -> C Game is aborted
-    exports.T_GAME_ABORTED = "GAME-ABORTED";
-    exports.O_GAME_ABORTED = {
-        type: exports.T_GAME_ABORTED,
-      };
     exports.S_GAME_ABORTED = JSON.stringify(exports.O_GAME_ABORTED);
     // S -> C
     exports.T_CHOOSE = "CHOOSE";
@@ -42,10 +37,10 @@
         data: "B",
     };
     exports.S_PLAYER_B = JSON.stringify(exports.O_PLAYER_B);
-    
+
     exports.T_WAIT = "WAIT";
     exports.O_WAIT = {
         type: exports.T_WAIT,
     };
-// @ts-ignore
-})(typeof exports === "undefined" ? ( this.Messages = {}) : exports);
+    // @ts-ignore
+})(typeof exports === "undefined" ? (this.Messages = {}) : exports);

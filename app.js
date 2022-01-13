@@ -10,7 +10,7 @@ const gameStatus = require("./statTracker");
 const Game = require("./game");
 const game = require("./game");
 
-if(process.argv.length < 3) {
+if (process.argv.length < 3) {
     console.log("Error: expected a port as argument");
     process.exit(1);
 }
@@ -31,11 +31,11 @@ const wss = new websocket.Server({ server });
 // We want to regularly clean up the sockets
 const websockets = {};
 let gamesInitialized = 0;
-setInterval(function() {
+setInterval(function () {
     for (let i in websockets) {
-        if(Object.prototype.hasOwnProperty.call(websockets, i)) {
+        if (Object.prototype.hasOwnProperty.call(websockets, i)) {
             let gameObj = websockets[i];
-            if(gameObj.finalStatus != null) {
+            if (gameObj.finalStatus != null) {
                 delete websockets[i];
             }
         }
@@ -62,14 +62,14 @@ wss.on("connection", function connection(ws) {
     // We inform the client about his player type
     // Also we inform the first player to wait
     con.send(playerType == "A" ? messages.S_PLAYER_A : messages.S_PLAYER_B)
-    if(playerType == "A") {
+    if (playerType == "A") {
         con.send(JSON.stringify(messages.O_WAIT));
     } else {
         currentGame.playerA.send(JSON.stringify(messages.O_CHOOSE));
     }
 
     // If we have two players we create a new game for the incoming players
-    if(currentGame.hasTwoPlayers()) {
+    if (currentGame.hasTwoPlayers()) {
         console.log("[STATUS] Game number " + gameStatus.gamesPlayed + " has started");
         currentGame = new Game(++gameStatus.gamesPlayed);
     }
@@ -83,13 +83,13 @@ wss.on("connection", function connection(ws) {
         gameObj.giveResponse(type, oMsg);
     })
 
-    con.on("close", function(code) {
+    con.on("close", function (code) {
         console.log(`Player ${con["id"]} disconnected ...`);
 
-        if(code == 1001) {
+        if (code == 1001) {
             const gameObj = websockets[con["id"]];
 
-            if(gameObj.isValidTransition(gameObj.gameState, "ABORTED")) {
+            if (gameObj.isValidTransition(gameObj.gameState, "ABORTED")) {
                 gameObj.setStatus("ABORTED");
             }
             // Whenever a connection closes we decrement the number of players
@@ -98,20 +98,16 @@ wss.on("connection", function connection(ws) {
 
             // We check which player disconnected
             try {
-                gameObj.playerA.send(JSON.stringify(messages.T_GAME_ABORTED))
                 gameObj.playerA.close();
                 gameObj.playerA = null;
-              } catch (e) {
-                console.log("Player A closing: " + e);
-              }
-      
-              try {
-                gameObj.playerB.send(JSON.stringify(messages.T_GAME_ABORTED))
+            } catch (e) {
+            }
+
+            try {
                 gameObj.playerB.close();
                 gameObj.playerB = null;
-              } catch (e) {
-                console.log("Player B closing: " + e);
-              }
+            } catch (e) {
+            }
         }
     })
 })
