@@ -1,26 +1,37 @@
 @import "style.css";
+.div{
+  vertical-align: middle; 
+  width: 200;
+  height: 200;
+}
 
-  .button1 {
-    border-radius: 100px;
-    border: 0px;
-    background-color: white;
-    color: #00a6d8;
-    text-align: center;
-    font-size: 34px;
-    font-family: 'DM Sans', sans-serif;
-    padding: 20px;
-    width: 15%;
-    transition: 0.5s;
-    margin: 5px;
-    box-shadow: 0px 8px 15px grey;
-    cursor: pointer;
-  }
+.button {
+  border-radius: 100px;
+  border: 0px;
+  background-color: white;
+  color: #00a6d8;
+  text-align: center;
+  font-size: 34px;
+  font-family: 'DM Sans', sans-serif;
+  padding: 20px;
+  width: 15%;
+  transition: 0.5s;
+  margin: 5px;
+  box-shadow: 0px 8px 15px grey;
+  cursor: pointer;
+  vertical-align:middle
+}
 
-  .button1:hover {
-    background-color: #00a6d8;
-    color: white;
-    transform: scale(1.1);
-  }
+.button:hover {
+  background-color: #00a6d8;
+  color: white;
+  transform: scale(1.1);
+}
+
+.button:active {
+  transition: 0.1s;
+  transform: scale(1);
+}
 
 .grid-container {
     display: grid;
