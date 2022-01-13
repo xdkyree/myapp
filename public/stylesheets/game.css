@@ -24,10 +24,10 @@
 
 .grid-container {
     display: grid;
-    grid-template-columns: repeat(4, 0.12fr);
+    grid-template-columns: repeat(4, 100px);
     grid-gap: 20px;
     align-items: stretch;
-    justify-items: stretch;
+    justify-content: center;
 }
 
 .grid-container img {
