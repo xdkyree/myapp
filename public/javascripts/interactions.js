@@ -113,6 +113,20 @@ GameState.prototype.deactivateCards = function () {
     })
 }
 
+GameState.prototype.randomizeBoard = function() {
+    var cardStore = Array.from(this.cards);
+    var parent = cardStore[0].parentNode;
+    cardStore.forEach( function(el) {
+        el.parentNode.removeChild(el);
+    })
+    var limit = cardStore.length;
+    for(var i = 0; i < limit; i++) {
+        var chosen = Math.floor(Math.random() * cardStore.length);
+        parent.appendChild(cardStore[chosen]);
+        cardStore.splice(chosen, 1);
+    }
+}
+
 /**
  * Updates the game
  */
@@ -242,6 +256,7 @@ function setup() {
 
     socket.onopen = function () {
         socket.send("{}");
+        gs.randomizeBoard();
     }
 
     socket.onerror = function () { };
