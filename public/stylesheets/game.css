@@ -31,5 +31,24 @@
 }
 
 .grid-container img {
-    max-width: 100%;
+    max-width: 100px;
+    max-height: 175px;
   }
+
+.card {
+  background-color: #00a6d8;
+  border: 5px solid #00a6d8;
+  border-radius: 10px;
+  box-shadow: 10px 10px 10px grey;
+  justify-content: center;
+  align-items: center;
+  width: 100px;
+  height: 175px;
+  transition : 0.3s;
+}
+.card:hover {
+transform: scale(1.1);
+}
+.card:active {
+  transform: scale(1);
+}
