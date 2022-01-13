@@ -151,7 +151,7 @@ game.prototype.giveResponse = function (type, message) {
         found = true;
     }
     if (message.type == messages.T_GAME_WON_BY) {
-        msg = message.O_GAME_WON_BY;
+        msg = messages.O_GAME_WON_BY;
         msg.data = message.data;
         if (msg.data === "A") {
             gameStatus.aWins++;
