@@ -85,6 +85,7 @@ wss.on("connection", function connection(ws) {
 
     con.on("close", function (code) {
         console.log(`Player ${con["id"]} disconnected ...`);
+        gameStatus.playersOnline--;
 
         if (code == 1001) {
             const gameObj = websockets[con["id"]];
@@ -93,7 +94,6 @@ wss.on("connection", function connection(ws) {
                 gameObj.setStatus("ABORTED");
             }
             // Whenever a connection closes we decrement the number of players
-            gameStatus.playersOnline--;
 
 
             // We check which player disconnected

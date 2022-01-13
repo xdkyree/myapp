@@ -153,9 +153,6 @@ GameState.prototype.updateGame = function () {
             // Checks if game is over
             if (this.availableCards.length === 0) {
                 // If it is check who won and end the game
-                setTimeout(function () {
-                    alert("You won!");
-                }, 500)
                 // @ts-ignore
                 outMsg = Messages.O_GAME_WON_BY;
                 if (this.score > this.enemyScore) {
@@ -216,16 +213,16 @@ function setup() {
         }
         // @ts-ignore
         if (incomingMsg.type == Messages.T_TARGET_CARDS) {
-            gs.enemyCards = new Array();
             gs.enemyCards = incomingMsg.data;
             alert("Opponnent choice!");
-            console.log(gs.enemyCards);
             gs.revealOpponentCard(gs.enemyCards[0]);
             gs.revealOpponentCard(gs.enemyCards[1]);
-            setTimeout(function () {
-                alert("Your choice!");
-                gs.initializeCards();
-            }, 2500);
+            if (gs.availableCards.length != 2) {
+                setTimeout(function () {
+                    gs.initializeCards();
+                    alert("Your choice!");
+                }, 2000);
+            }
         }
         // @ts-ignore
         if (incomingMsg.type == Messages.T_SCORE) {
@@ -237,7 +234,6 @@ function setup() {
                     holder.push(card);
                 }
             }
-            gs.enemyCards = holder;
             gs.matchCards(holder);
         }
 
@@ -253,10 +249,12 @@ function setup() {
     }
 
     socket.onclose = function () {
-        if (gs.winner == gs.playerType) {
+        if (gs.winner === gs.playerType) {
             alert("You won!");
-        } else if (gs.winner == "AB") {
+        } else if (gs.enemyScore == gs.score) {
             alert("Tie!");
+        } else if(gs.winner === null){
+            alert("Game aborted")
         } else {
             alert("You lost!");
         }
@@ -264,7 +262,7 @@ function setup() {
         var cardStore = Array.from(gs.cards);
         var parent = cardStore[0].parentNode;
         cardStore.forEach(function (el) {
-        el.parentNode.removeChild(el);
+            el.parentNode.removeChild(el);
         })
         socket.onerror = function () { };
     }
