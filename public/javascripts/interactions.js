@@ -257,20 +257,12 @@ function setup() {
             alert("You won!");
         } else if (gs.winner == "AB") {
             alert("Tie!");
-<<<<<<< HEAD
         } else if(gs.score < gs.enemyScore){
-=======
-        } else {
->>>>>>> b5584018ae548c226b556fd84f3418956d1cb96d
             alert("You lost!");
         } else {
             alert("Game aborted");
         }
-<<<<<<< HEAD
-        document.getElementById("buttonReturn").style.visibility = "visible";
-=======
         document.getElementById("buttonReturn").style.visibility = "visible"; 
->>>>>>> b5584018ae548c226b556fd84f3418956d1cb96d
         var cardStore = Array.from(gs.cards);
         var parent = cardStore[0].parentNode;
         cardStore.forEach(function (el) {
