@@ -260,6 +260,7 @@ function setup() {
         } else {
             alert("You lost!");
         }
+        document.getElementById("buttonReturn").style.display = "normal"; 
 
         socket.onerror = function () { };
     }
