@@ -54,7 +54,7 @@ GameState.prototype.matchCards = function (ca) {
         for (var i = 0; i < parentThis.availableCards.length; i++) {
             if (parentThis.availableCards[i].id === el.id) {
                 parentThis.availableCards.splice(i, 1);
-                el.setAttribute("src", "images/cat.png");
+                el.setAttribute("src", "images/guessed.png");
                 el.removeEventListener("click", parentThis.revealBind, false);
             }
         }
