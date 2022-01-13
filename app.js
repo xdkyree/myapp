@@ -65,7 +65,7 @@ wss.on("connection", function connection(ws) {
     }
 
     if(currentGame.hasTwoPlayers()) {
-        console.log("[STATUS] Game number " + (gameStatus.gamesPlayed - 1) + " has started");
+        console.log("[STATUS] Game number " + gameStatus.gamesPlayed + " has started");
         currentGame = new Game(++gameStatus.gamesPlayed);
     }
 
@@ -73,60 +73,8 @@ wss.on("connection", function connection(ws) {
         const oMsg = JSON.parse(message);
 
         const gameObj = websockets[con["id"]];
-        const isPlayerA = gameObj.playerA == con ? true : false;
-
-        if(isPlayerA) {
-            if(oMsg.type == messages.T_TARGET_CARDS) {
-                var msg = messages.O_TARGET_CARDS;
-                msg.data = oMsg.data;
-                gameObj.playerB.send(JSON.stringify(msg));
-                gameObj.setStatus("A GUESS");
-            }
-            if(oMsg.type == messages.T_SCORE) {
-                var msg = messages.O_SCORE;
-                gameObj.playerB.send(JSON.stringify(msg));
-            }
-            if(oMsg.type == messages.T_GAME_WON_BY) {
-                var msg = messages.O_GAME_WON_BY;
-                msg.data = oMsg.data;
-                gameObj.playerB.send(JSON.stringify(msg));
-                if(msg.data === "A") {
-                    gameStatus.aWins++;
-                    gameObj.setStatus("A");
-                } else {
-                    gameStatus.bWins++;
-                    gameObj.setStatus("B");
-                }
-                gameObj.playerB.close();
-                gameObj.playerB.close();
-            }
-
-        } else {
-            if(oMsg.type == messages.T_TARGET_CARDS) {
-                var msg = messages.O_TARGET_CARDS;
-                msg.data = oMsg.data;
-                gameObj.playerA.send(JSON.stringify(msg));
-                gameObj.setStatus("B GUESS");
-            }
-            if(oMsg.type == messages.T_SCORE) {
-                var msg = messages.O_SCORE;
-                gameObj.playerA.send(JSON.stringify(msg));
-            }
-            if(oMsg.type == messages.T_GAME_WON_BY) {
-                var msg = messages.O_GAME_WON_BY;
-                msg.data = oMsg.data;
-                gameObj.playerA.send(JSON.stringify(msg));
-                if(msg.data === "A") {
-                    gameStatus.aWins++;
-                    gameObj.setStatus("A");
-                } else {
-                    gameStatus.bWins++;
-                    gameObj.setStatus("B");
-                }
-                gameObj.playerB.close();
-                gameObj.playerB.close();
-            }
-        }
+        const type = gameObj.playerA == con ? "A" : "B";
+        gameObj.giveResponse(type, oMsg);
     })
 
     con.on("close", function(code) {

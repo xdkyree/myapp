@@ -1,6 +1,8 @@
 //@ts-check
 
 const websocket = require("ws");
+const messages = require("./public/javascripts/messages");
+const gameStatus = require("./statTracker");
 
 
 const game = function(gameID) {
@@ -109,5 +111,40 @@ game.prototype.addPlayer = function(p) {
         return "B";
     }
 };
+
+game.prototype.giveResponse = function(type, message) {
+    var msg;
+    var found = false;
+    if(message.type == messages.T_TARGET_CARDS) {
+        msg = messages.O_TARGET_CARDS;
+        msg.data = message.data;
+        found = true;
+    }
+    if(message.type == messages.T_SCORE) {
+        msg = messages.O_SCORE;
+        found = true;
+    }
+    if(message.type == messages.T_GAME_WON_BY) {
+        msg = message.O_GAME_WON_BY;
+        msg.data = message.data;
+        if(msg.data === "A") {
+            gameStatus.aWins++;
+            this.setStatus("A");
+        } else {
+            gameStatus.bWins++;
+            this.setStatus("B");
+        }
+        this.playerA.close();
+        this.playerB.close();
+        found = true;
+    }
+    if(found) {
+        if(type === "A" ) {
+            this.playerB.send(JSON.stringify(msg));
+        } else {
+            this.playerA.send(JSON.stringify(msg));
+        }
+    }
+} 
 
 module.exports = game;
