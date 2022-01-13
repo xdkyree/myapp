@@ -5,18 +5,22 @@ const messages = require("./public/javascripts/messages");
 const gameStatus = require("./statTracker");
 
 
+/**
+ * Game constructor. Every game has two players identified by their Sockets
+ * @param {number} gameID every game has a unique game id
+ */
 const game = function(gameID) {
     this.playerA = null;
     this.playerB = null;
     this.id = gameID;
     this.aScore = 0;
     this.bScore = 0;
-    this.availableCards = [];
-    this.usedCards = [];
-    this.revealedCards = [];
-    this.gameState = "0 JOINT";
+    this.gameState = "0 JOINT"; // Initial gameState
 };
 
+/**
+ * All valid game states
+ */
 game.prototype.transitionStates = {
     "0 JOINT": 0,
     "1 JOINT": 1,
@@ -28,6 +32,9 @@ game.prototype.transitionStates = {
     "ABORT": 7
 };
 
+/**
+ * All valid game state transformations
+ */
 game.prototype.transitionMatrix = [
     [0,1,0,0,0,0,0,0], // 0 JOINT
     [1,0,1,0,0,0,0,0], // 1 JOINT
@@ -39,6 +46,12 @@ game.prototype.transitionMatrix = [
     [0,0,0,0,0,0,0,0]  // ABORT
 ];
 
+/**
+ * Determines whether transition `from` to `to` is valid
+ * @param {string} from starting state
+ * @param {string} to next state
+ * @returns {boolean} true iff valid
+ */
 game.prototype.isValidTransition = function(from, to) {
     let i, j;
     if(!(from in game.prototype.transitionStates)) {
@@ -56,10 +69,19 @@ game.prototype.isValidTransition = function(from, to) {
     return game.prototype.transitionMatrix[i][j] > 0;
 };
 
+/**
+ * Determines whether s is a valid state
+ * @param {string} s state to check 
+ * @returns {boolean}
+ */
 game.prototype.isValidState = function(s) {
     return s in game.prototype.transitionStates;
 };
 
+/**
+ * Updates the game status to `w`
+ * @param {string} w new game status
+ */
 game.prototype.setStatus = function(w) {
     if(
         game.prototype.isValidState(w) &&
@@ -74,23 +96,20 @@ game.prototype.setStatus = function(w) {
     }
 }
 
-game.prototype.setCards = function(w) {
-    if (this.gameState != "1 JOINT" && this.gameState != "JOINT") {
-        return new Error(
-            'Trying to set cards, but game status is wrong'
-        );
-    } 
-    this.availableCards = w;
-}
-
-game.prototype.getAvailableCards = function() {
-    return this.availableCards;
-}
-
+/**
+ * Checks whether game is full
+ * @returns {boolean}
+ */
 game.prototype.hasTwoPlayers = function() {
     return this.gameState == "2 JOINT";
 };
 
+
+/**
+ * Adds a player to the game. Error if not possible
+ * @param {websocket} p WebSocket object of the player
+ * @returns {(string|Error)} returns "A" or "B" or error
+ */
 game.prototype.addPlayer = function(p) {
     if (this.gameState != "0 JOINT" && this.gameState != "1 JOINT") {
         return new Error(
@@ -112,6 +131,11 @@ game.prototype.addPlayer = function(p) {
     }
 };
 
+/**
+ * Given a message, sends it to the recipient and updates statistics
+ * @param {string} type 
+ * @param {any} message 
+ */
 game.prototype.giveResponse = function(type, message) {
     var msg;
     var found = false;
