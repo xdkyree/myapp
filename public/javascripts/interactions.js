@@ -260,7 +260,7 @@ function setup() {
         } else {
             alert("You lost!");
         }
-        document.getElementById("buttonReturn").style.display = "normal"; 
+        document.getElementById("buttonReturn").style.visibility = "visible"; 
         var cardStore = Array.from(gs.cards);
         var parent = cardStore[0].parentNode;
         cardStore.forEach(function (el) {

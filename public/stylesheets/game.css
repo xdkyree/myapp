@@ -20,7 +20,7 @@
   box-shadow: 0px 8px 15px grey;
   cursor: pointer;
   vertical-align:middle;
-  display: none;
+  visibility: hidden;
 }
 
 .button:hover {
