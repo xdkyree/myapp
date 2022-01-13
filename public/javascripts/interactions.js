@@ -253,12 +253,12 @@ function setup() {
             alert("You won!");
         } else if (gs.enemyScore == gs.score) {
             alert("Tie!");
-        } else if(gs.winner === null){
-            alert("Game aborted")
-        } else {
+        } else if(gs.score < gs.enemyScore){
             alert("You lost!");
+        } else {
+            alert("Game aborted");
         }
-        document.getElementById("buttonReturn").style.display = "normal";
+        document.getElementById("buttonReturn").style.visibility = "visible";
         var cardStore = Array.from(gs.cards);
         var parent = cardStore[0].parentNode;
         cardStore.forEach(function (el) {
