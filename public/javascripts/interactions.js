@@ -260,7 +260,12 @@ function setup() {
         } else {
             alert("You lost!");
         }
-
+        document.getElementById("buttonReturn").style.display = "normal"; 
+        var cardStore = Array.from(gs.cards);
+        var parent = cardStore[0].parentNode;
+        cardStore.forEach(function (el) {
+        el.parentNode.removeChild(el);
+        })
         socket.onerror = function () { };
     }
 }
