@@ -15,6 +15,7 @@ function GameState(socket) {
     this.socket = socket;
     this.enemyCards = [];
     this.revealBind = this.reveal.bind(this);
+    this.winner = null;
 }
 
 /**
@@ -113,14 +114,14 @@ GameState.prototype.deactivateCards = function () {
     })
 }
 
-GameState.prototype.randomizeBoard = function() {
+GameState.prototype.randomizeBoard = function () {
     var cardStore = Array.from(this.cards);
     var parent = cardStore[0].parentNode;
-    cardStore.forEach( function(el) {
+    cardStore.forEach(function (el) {
         el.parentNode.removeChild(el);
     })
     var limit = cardStore.length;
-    for(var i = 0; i < limit; i++) {
+    for (var i = 0; i < limit; i++) {
         var chosen = Math.floor(Math.random() * cardStore.length);
         parent.appendChild(cardStore[chosen]);
         cardStore.splice(chosen, 1);
@@ -159,15 +160,16 @@ GameState.prototype.updateGame = function () {
                 outMsg = Messages.O_GAME_WON_BY;
                 if (this.score > this.enemyScore) {
                     outMsg.data = this.playerType;
-                    alert("You won!");
-                } else {
+                } else if (this.score < this.enemyScore) {
                     if (this.playerType === "A") {
                         outMsg.data = "B";
                     } else {
                         outMsg.data = "A";
                     }
-                    alert("You lost!");
+                } else {
+                    outMsg.data = "AB";
                 }
+                this.winner = outMsg.data;
                 this.socket.send(JSON.stringify(outMsg));
             }
 
@@ -241,16 +243,7 @@ function setup() {
 
         // @ts-ignore
         if (incomingMsg.type == Messages.T_GAME_WON_BY) {
-            if (incomingMsg.data === gs.playerType) {
-                alert("You Won!");
-            } else {
-                alert("You lost!");
-            }
-        }
-
-        // @ts-ignore
-        if (incomingMsg.type == Messages.T_GAME_ABORTED) {
-            alert("Opponent left. You win!");
+            gs.winner = incomingMsg.data;
         }
     }
 
@@ -259,7 +252,16 @@ function setup() {
         gs.randomizeBoard();
     }
 
-    socket.onerror = function () { };
-}
+    socket.onclose = function () {
+        if (gs.winner == gs.playerType) {
+            alert("You won!");
+        } else if (gs.winner == "AB") {
+            alert("Tie!");
+        } else {
+            alert("You lost!");
+        }
 
+        socket.onerror = function () { };
+    }
+}
 setup();
